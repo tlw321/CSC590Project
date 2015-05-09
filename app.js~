@@ -1,0 +1,5 @@
+angular.module('spadesScoreKeeper', [])
+    .controller('MainController', function($scope)
+		{
+		    $scope.greeting = {text: "Hello"};
+		});

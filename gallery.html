@@ -1,0 +1,10 @@
+<div id="jazzGallery">
+  <div ng-repeat="piece in jazzPieces | orderBy:sort" ng-class="['piece', 'genre_'+piece.genre]"  style="background-image:url(data/0/square.jpg)">
+	  <a href="views/{{piece.view}}.html" title="{{piece.title}} by {{piece.artist}}">
+	    <div id="pieceTitleWrapper">
+	      <b>{{piece.title}}</b>
+	      </div>
+	    <div class="tags"><span class="diff">{{piece.artist}}</span>{{piece.genre}}</div>
+	  </a>
+  </div>
+</div>
