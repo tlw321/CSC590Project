@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Collection Maker</title>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/maker.js"></script>
+  </head>
+  <body>
+    <h1>Collection Maker</h1>
+    <form id="recordInputForm">
+      Number of Records:<br>
+      <input type="text" name="recordInput">
+      <br>
+      Number of Fields:<br>
+      <input type="text" name="fields">
+      <input type="button" onclick="populateMakerField()" value="Populate">
+    <div id="makerField">
+    </div>
+  </body>
+  </html>

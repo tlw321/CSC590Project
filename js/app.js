@@ -1,30 +1,52 @@
-/*//Force https protocol for Save to Drive functionality
-window.onload = function(){
-    if (window.location.protocol == "http:")
-	window.location.href = "https:" + window.location.href.substring(window.location.protocol.length)
-};
-*/
+window.onload = function()
+{
+    if(typeof(Storage) !== "undefined")
+    {
+	//Retrieve preferences from local storage
+	var lastVisitedPage = localStorage.getItem("lastVisitedPage");
+	
+	//Set location to last visited page
+	if(lastVisitedPage !== undefined)
+	{
+	    window.location.href = preferences.lastVisitedPage;
+	}
+    }
+
+    else
+    {
+	//Local storage not supported in this browser
+    }
+}
+   
+
 
 var app = angular.module('jazzGalleryApp', [
     'ngRoute',
     'galleryControllers'
 ]);
 
-app.service('sharedProperties', function () {
-    var propertyValue = {
-	data:{}
-    };
+app.service('sharedProperties', function() {
+    var jazzPieces = {};
 
-    return {
-	getProperty: function () {
-	    return propertyValue.data;
-	},
-	setProperty: function (value) {
-	    propertyValue.data = value;
-	    alert(propertyValue.data);
-	}
+    this.storePieces = function (dataCollection)
+    {
+	jazzPieces.data = dataCollection;
+    }
+    
+    this.retrievePieces = function ()
+    {
+	return jazzPieces;
     };
 });
+
+app.directive('onLastRepeat', function() {
+    return function(scope, element, attrs) {
+	if (scope.$last) setTimeout(function(){
+	    scope.$emit('onRepeatLast',element,attrs);
+	}, 3);
+    };
+});
+
 
 //ROUTING ================================================
 app.config(['$routeProvider',

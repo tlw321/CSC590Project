@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>Collection Maker</title>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/maker.js"></script>
+  </head>
+  <body>
+    <div id="makerField">
+      
+    </div>
+  </body>
+  </html>

@@ -3,20 +3,14 @@
     <meta charset="utf-8"/>
     <title>Jazz Standards Gallery &#9834;</title>
     <meta name="viewport" content="width=device-width"/>
-
-    <!-- build:css build/foldnfly.min.css -->
-    <link rel="stylesheet" href="vendor/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="vendor/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/main.css"/>
-    <!-- endbuild -->
-
-    <script src="vendor/js/jquery-1.9.1.min.js"></script>
-    <script src="vendor/js/jquery.json-2.3.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
     <script src="node_modules/angular/angular.js"></script>
-    <script src="vendor/js/bootstrap.min.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/app.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/pdfobject.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="node_modules/angular-route/angular-route.js"></script>
   </head>
   <body>
@@ -24,9 +18,7 @@
     <div class="list" ng-controller="galleryController" ng-init="init()">
       <div id="nav">
 	<div id="logo">
-	  <a href="index.html#">
-	    <img src="images/music.png" alt="jazz_placeholder">
-	  </a>
+	  <a href="index.html#"></a>
 	</div>
 
 	<div class="navinner">
@@ -60,10 +52,10 @@
       </div>
       
       <div id="top">
-	<div id="status">
+	<!--<div id="status">
 	  {{ showing }} out of {{ total }}
 	  <span class="more" ng-show="showing < total">[<a ng-click="showall();">show all</a>]</span>
-	</div>
+	</div>-->
 	<div id="headerOuterWrapper">
 	  <div id="headerInnerWrapper">
 	    <h1 id="header">Jazz Standards Gallery</h1>
@@ -77,22 +69,24 @@
 	</div>
       </div>
       <div id="jazzGalleryWrapper">
-      <div id="jazzGallery">
-	<div ng-repeat="piece in jazzPieces | orderBy:sort" ng-class="['piece', 'genre_'+piece.genre]"  style="background-image:url(data/0/square.jpg)">
+      <div id="jazzGallery" ng-show="isShowing()">
+	<div ng-repeat="piece in jazzPieces | orderBy:sort" ng-class="['piece', 'genre_'+piece.genre]" style="background-image:url(data/0/square.jpg)" on-last-repeat>
 	  <a href="#views/{{piece.view}}" title="{{piece.title}} by {{piece.artist}}">
 	    <div id="pieceTitleWrapper">
 	      <b>{{piece.title}}</b>
+	    </div>
+	    <div id="pieceImageWrapper">
+	      <img src="views/covers/{{piece.view}}.png" alt="{{piece.view}}_image" height="110" width="110">
 	      </div>
 	    <div class="tags"><span class="diff">{{piece.artist}}</span>{{piece.genre}}</div>
 	  </a>
 	</div>
       </div>
       </div>
-      <div id="singlePieceOutsideWrapper">
-	<div ng-view></div>
-	<div id="nothing" ng-show="showing==0">No results</div>
-      </div>
+      <div id="singlePieceOutsideWrapper" ng-view></div>
+      <div id="nothing" ng-show="!isShowing()">
+	  <h2>No Results</h2>
+	</div>
     </div>
-
   </body>
   </html>
