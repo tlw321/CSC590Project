@@ -1,25 +1,3 @@
-window.onload = function()
-{
-    if(typeof(Storage) !== "undefined")
-    {
-	//Retrieve preferences from local storage
-	var lastVisitedPage = localStorage.getItem("lastVisitedPage");
-	
-	//Set location to last visited page
-	if(lastVisitedPage !== undefined)
-	{
-	    window.location.href = preferences.lastVisitedPage;
-	}
-    }
-
-    else
-    {
-	//Local storage not supported in this browser
-    }
-}
-   
-
-
 var app = angular.module('jazzGalleryApp', [
     'ngRoute',
     'galleryControllers'
@@ -27,7 +5,8 @@ var app = angular.module('jazzGalleryApp', [
 
 app.service('sharedProperties', function() {
     var jazzPieces = {};
-
+    var currentURL = "";
+    
     this.storePieces = function (dataCollection)
     {
 	jazzPieces.data = dataCollection;
@@ -37,6 +16,23 @@ app.service('sharedProperties', function() {
     {
 	return jazzPieces;
     };
+
+    this.storeCurrentURL = function (_currentURL)
+    {
+	currentURL = _currentURL;
+	//Save currentURL to storage
+	this.saveToStorage("lastVisitedPage", currentURL);
+    }
+
+    this.retrieveCurrentURL = function ()
+    {
+	return currentURL;
+    }
+
+    this.saveToStorage = function (key, value)
+    {
+	localStorage.setItem(key, value);
+    }
 });
 
 app.directive('onLastRepeat', function() {
@@ -49,17 +45,16 @@ app.directive('onLastRepeat', function() {
 
 
 //ROUTING ================================================
-app.config(['$routeProvider',
-	    function($routeProvider) {
+app.config(['$routeProvider', function($routeProvider) {
     $routeProvider
 	
 	.when('/', {
-	    templateUrl: 'gallery.html',
-	    controller : 'galleryViewController'
+	    templateUrl: 'blank.html',
+	    controller : 'galleryController'
 	})
         .when('/views/:viewid', {
 	    templateUrl: 'piece-detail.html',
 	    controller : 'pieceViewController'
 	});
-	    }]);
+}]);
 

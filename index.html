@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
     <script src="node_modules/angular/angular.js"></script>
-    <script src="js/controllers.js"></script>
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <script src="build/jazzGalleryApp.min.js"></script>
+    <!--<script src="js/controllers.js"></script>
     <script src="js/app.js"></script>
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/pdfobject.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="node_modules/angular-route/angular-route.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>-->
   </head>
   <body>
 
@@ -71,7 +72,7 @@
       <div id="jazzGalleryWrapper">
       <div id="jazzGallery" ng-show="isShowing()">
 	<div ng-repeat="piece in jazzPieces | orderBy:sort" ng-class="['piece', 'genre_'+piece.genre]" style="background-image:url(data/0/square.jpg)" on-last-repeat>
-	  <a href="#views/{{piece.view}}" title="{{piece.title}} by {{piece.artist}}">
+	  <a href="#views/{{piece.view}}" title="{{piece.title}} by {{piece.artist}}" ng-click="setStorage()">
 	    <div id="pieceTitleWrapper">
 	      <b>{{piece.title}}</b>
 	    </div>

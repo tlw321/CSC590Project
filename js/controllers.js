@@ -1,9 +1,7 @@
-
-
 var galleryControllers = angular.module('galleryControllers', []);
 var test = {};
 
-galleryControllers.controller('galleryController', function($route, $scope, $location, $http, $timeout, sharedProperties, $templateCache){
+galleryControllers.controller('galleryController', ['$route', '$scope', '$location', '$http', '$timeout', 'sharedProperties', '$templateCache', function($route, $scope, $location, $http, $timeout, sharedProperties, $templateCache){
     
 	//Retrieve Jazz Collection JSON Data
         $scope.httpMethod = 'GET';
@@ -41,18 +39,14 @@ galleryControllers.controller('galleryController', function($route, $scope, $loc
 	};
 
         $scope.init = function() {
-	        $scope.fetch();
-	        $scope.pathDecode();
-	        $scope.localStoragePreferences = {};
-	        //$scope.change();
+	    $scope.fetch();
+	    $scope.getStorage();
+	    $scope.initUrl();
+	    $scope.pathDecode();
 	};
 
     $scope.$on('onRepeatLast', function(scope, element, attrs){
-	//$scope.total = $('.piece').length;
-	//$scope.showing = $('.piece:visible').length;
-	//alert("Total:"+$scope.total+" Showing:"+$scope.showing);
-	$scope.change();
-	//$scope.totalSet = 0;
+	$scope.updateGalleryControls();
     });
 
     $scope.isShowing = function() {
@@ -68,15 +62,73 @@ galleryControllers.controller('galleryController', function($route, $scope, $loc
 		return true;
 	    }
     }
+
+    $scope.getStorage = function()
+    {
+	if(localStorage.getItem("lastVisitedPage") !== undefined)
+	{
+	    $scope.lastVisitedPage = localStorage.getItem("lastVisitedPage");
+	    //Set checkbox state if last visited page is a view page
+	    if($scope.isViewPath($scope.lastVisitedPage))
+	    {
+		$scope.filters.genre_swing = localStorage.getItem("genre_swing_state");
+		$scope.filters.genre_ballad = localStorage.getItem("genre_ballad_state");
+		$scope.filters.genre_funkRock = localStorage.getItem("genre_funkRock_state");
+		$scope.filters.genre_latin = localStorage.getItem("genre_latin_state");
+		$scope.filters.genre_bebop = localStorage.getItem("genre_bebop_state");
+	    }
+
+	    $scope.filters.sort_criteria = localStorage.getItem("sort_criteria");
+	}
+
+	else
+	{
+	    $scope.lastVisitedPage = "";
+	}
+    }
+
+    $scope.isViewPath = function(string)
+    {
+	return string.substr(1,5)=="views";
+    }
     
-	$scope.change = function() {
-	    //alert("Total: "+ $scope.total + " Showing: " + $scope.showing);
-	    $location.path($scope.pathEncode());
-	    //Set this location to last visited in local storage
-	    $scope.localStoragePreferences.lastVisitedPage = $location.absUrl();
-	    localStorage.setItem("lastVisitedPage", $scope.localStoragePreferences.lastVisitedPage);
-	    
-		$('.piece').show(); //show all
+    $scope.initUrl = function()
+    {
+	if($scope.lastVisitedPage != "")
+	{
+	    $location.path($scope.lastVisitedPage);
+	    $scope.updateGalleryControls();
+	}
+
+	else
+	{
+	    $scope.change();
+	}
+    }
+    
+    $scope.setStorage = function()
+    {
+	
+	if($location.path().substr(1,5)!="views")
+	{
+	    $scope.lastVisitedPage = $location.path();
+	    localStorage.setItem("lastVisitedPage", $scope.lastVisitedPage);
+	}
+	
+	//Save genre state
+	localStorage.setItem("genre_swing_state", $scope.filters.genre_swing);
+	localStorage.setItem("genre_ballad_state", $scope.filters.genre_ballad);
+	localStorage.setItem("genre_funkRock_state", $scope.filters.genre_funkRock);
+	localStorage.setItem("genre_latin_state", $scope.filters.genre_latin);
+	localStorage.setItem("genre_bebop_state", $scope.filters.genre_bebop);
+
+	//Save sort criteria
+	localStorage.setItem("sort_criteria", $scope.filters.sort_criteria);
+    }
+
+    $scope.updateGalleryControls = function()
+    {
+	$('.piece').show(); //show all
 	   
 		if(!$scope.filters.genre_swing) $('.genre_swing').hide();
 		if(!$scope.filters.genre_ballad) $('.genre_ballad').hide();
@@ -113,12 +165,29 @@ galleryControllers.controller('galleryController', function($route, $scope, $loc
 	    }
 
 	    $scope.isShowing();
+	    $scope.setStorage();
+    }
+    
+    $scope.change = function() {
+
+		$location.path($scope.pathEncode());
+	        $scope.updateGalleryControls();
 	};
 
 
 	// Decodes the search string from the URL and sets the filters
 	$scope.pathDecode = function() {
-		$scope.search = $location.path().substr(1);
+	    $scope.search = $location.path().substr(1);
+	  
+	    if($scope.search.substr(0,5) == "views")
+	    {
+		$scope.isViewPath = true;
+	    }
+
+	    else
+	    {
+		$scope.isViewPath = false;
+		
 		var url_parts = $scope.search.split('-');
 	   
 	        if (url_parts.length < 6)
@@ -132,7 +201,8 @@ galleryControllers.controller('galleryController', function($route, $scope, $loc
 	        $scope.filters.genre_latin = (url_parts[3] == '1');
 		$scope.filters.genre_bebop = (url_parts[4] == '1');
 		$scope.filters.sort_criteria = parseInt(url_parts[5]);
-	};
+	    }
+	   };
 								      
 	// Turn filters into a string to put in the url
 	$scope.pathEncode = function() {
@@ -160,10 +230,10 @@ galleryControllers.controller('galleryController', function($route, $scope, $loc
 		$scope.change();
 	};
 
-});
+}]);
 
 
-galleryControllers.controller('pieceViewController', function($scope, $routeParams, $http, $sce, sharedProperties) {
+galleryControllers.controller('pieceViewController', ['$scope', '$routeParams', '$http', '$sce', 'sharedProperties', function($scope, $routeParams, $http, $sce, sharedProperties) {
     $scope.viewid = $routeParams.viewid;
     $scope.pieces = sharedProperties.retrievePieces().data;
     
@@ -212,6 +282,9 @@ galleryControllers.controller('pieceViewController', function($scope, $routePara
 	$scope.conc_url = "views/c/"+$scope.piece.view+".pdf";
 	$scope.current_url = $scope.conc_url;
 	$scope.renderPdf();
+
+	//Set sharedProperties current URL as current piece's view
+	sharedProperties.storeCurrentURL("/views/"+$scope.piece.view);
     }
     
     $scope.renderPdf = function() {
@@ -255,4 +328,4 @@ galleryControllers.controller('pieceViewController', function($scope, $routePara
 		$scope.status = status;
 	    });
 	}
-    });
+}]);
